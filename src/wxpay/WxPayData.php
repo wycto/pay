@@ -13,7 +13,7 @@ require_once "WxPayException.php"; */
  * @author widyhu
  *
  */
-class WxPayDataBase
+class WxPayData
 {
 	protected $values = array();
 
@@ -138,7 +138,7 @@ class WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayResults extends WxPayDataBase
+class WxPayResults extends WxPayData
 {
 	/**
 	 *
@@ -219,7 +219,7 @@ class WxPayResults extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayNotifyReply extends  WxPayDataBase
+class WxPayNotifyReply extends  WxPayData
 {
 	/**
 	 *
@@ -279,7 +279,7 @@ class WxPayNotifyReply extends  WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayUnifiedOrder extends WxPayDataBase
+class WxPayUnifiedOrder extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -754,7 +754,7 @@ class WxPayUnifiedOrder extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayOrderQuery extends WxPayDataBase
+class WxPayOrderQuery extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -892,7 +892,7 @@ class WxPayOrderQuery extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayCloseOrder extends WxPayDataBase
+class WxPayCloseOrder extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -1004,7 +1004,7 @@ class WxPayCloseOrder extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayRefund extends WxPayDataBase
+class WxPayRefund extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -1297,7 +1297,7 @@ class WxPayRefund extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayRefundQuery extends WxPayDataBase
+class WxPayRefundQuery extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -1512,7 +1512,7 @@ class WxPayRefundQuery extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayDownloadBill extends WxPayDataBase
+class WxPayDownloadBill extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -1675,7 +1675,7 @@ class WxPayDownloadBill extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayReport extends WxPayDataBase
+class WxPayReport extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -2047,7 +2047,7 @@ class WxPayReport extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayShortUrl extends WxPayDataBase
+class WxPayShortUrl extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -2159,7 +2159,7 @@ class WxPayShortUrl extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayMicroPay extends WxPayDataBase
+class WxPayMicroPay extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -2556,7 +2556,7 @@ class WxPayMicroPay extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayReverse extends WxPayDataBase
+class WxPayReverse extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -2694,7 +2694,7 @@ class WxPayReverse extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayJsApiPay extends WxPayDataBase
+class WxPayJsApiPay extends WxPayData
 {
 	/**
 	* 设置微信分配的公众账号ID
@@ -2855,7 +2855,7 @@ class WxPayJsApiPay extends WxPayDataBase
  * @author widyhu
  *
  */
-class WxPayBizPayUrl extends WxPayDataBase
+class WxPayBizPayUrl extends WxPayData
 {
 		/**
 	* 设置微信分配的公众账号ID

@@ -2,21 +2,32 @@
 namespace wycto\pay\test;
 require_once "../src/PayAbstract.php";
 require_once "../src/WxPay.php";
+require_once "../src/wxpay/JsApiPay.php";
+require_once "../src/wxpay/WxPayConfig.php";
 use wycto\pay\WxPay;
+class Test{
+    function run(){
+        $pay = WxPay::init(array());
 
-$apyApp = WxPay::init(array());
+        // 订单描述
+        $param['body'] = "1元";
+        // 商户订单号
+        $param['out_trade_no'] = 161561665165;
+        // 付款金额
+        $param['total_fee'] = 12.2;
 
-// 订单描述
-$param['body'] = "1元";
-// 商户订单号
-$param['out_trade_no'] = 161561665165;
-// 付款金额
-$param['total_fee'] = 12.2;
+        $param['notify_url'] = 'http://' . $_SERVER['HTTP_HOST'] . "test";
 
-$param['notify_url'] = 'http://' . $_SERVER['HTTP_HOST'] . "test";
-
-$re = $apyApp->weiXinPay(array(''));
-
+        $pay->weiXinPay(array(''));
+    }
+}
+/* require_once "../src/PayAbstract.php";
+require_once "../src/WxPay.php";
+require_once "../src/wxpay/JsApiPay.php";
+require_once "../src/wxpay/WxPayConfig.php";
+use wycto\pay\WxPay; */
+$re = new Test();
+$re = $re->run();
 print_r($re);
 exit();
 

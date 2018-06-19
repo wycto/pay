@@ -6,9 +6,9 @@
  * Copyright (c) 2016~2099 http://www.wycto.com All rights reserved.
  */
 namespace wycto\pay;
-use wycto\pay\wxpay\WxPayJsApiPay;
 use wycto\pay\wxpay\WxPayUnifiedOrder;
 use wycto\pay\wxpay\WxPayApi;
+use wycto\pay\wxpay\JsApiPay;
 class WxPay extends PayAbstract
 {
     // 全局唯一实例
@@ -31,7 +31,7 @@ class WxPay extends PayAbstract
 
     function weiXinPay($paran){
         //①、获取用户openid
-        $tools = new WxPayJsApiPay();
+        $tools = new JsApiPay();
         $openId = $tools->GetOpenid();
 
         //②、统一下单

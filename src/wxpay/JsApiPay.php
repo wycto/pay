@@ -11,7 +11,7 @@ namespace wycto\pay\wxpay;
  * @author widy
  *
  */
-class WxPayJsApiPay
+class JsApiPay
 {
 	/**
 	 *
@@ -71,7 +71,7 @@ class WxPayJsApiPay
 		{
 			throw new WxPayException("参数错误");
 		}
-		$jsapi = new WxPayJsApiPay();
+		$jsapi = new JsApiPay();
 		$jsapi->SetAppid($UnifiedOrderResult["appid"]);
 		$timeStamp = time();
 		$jsapi->SetTimeStamp("$timeStamp");
