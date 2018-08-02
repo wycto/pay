@@ -9,14 +9,37 @@ namespace wycto\pay;
 
 class Alipay  extends PayAbstract
 {
-    static function init($config){
+  // 全局唯一实例
+	private static $_app = null;
 
-        /* if(null == self::$_app){
-            self::$_app = new Alipay($config);
-        }
+	private $_config = array();
 
-        return self::$_app; */
+	private function __construct($config) {
+
+		// 自动识别域名
+		$this->_notify_url = 'http://' . $_SERVER['HTTP_HOST'] . '/user/payment/alipaynotify';
+		$this->_return_url = 'http://' . $_SERVER['HTTP_HOST'] . '/user/payment/alipayresponse';
+	}
+
+	static function init($config) {
+
+		if (self::$_app==null) {
+			self::$_app = new Alipay($config);
+		}
+		return self::$_app;
+	}
+
+    function request(){
+
     }
+
+   function notify(){
+
+   }
+
+   function response(){
+
+   }
 }
 
 ?>
