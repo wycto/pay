@@ -3,16 +3,16 @@ namespace wycto\pay\alipay;
 class Wap
 {
     /*配置信息*/
-    protected $app_id;//appid
-    protected $private_key;//应用私钥，生成的时候保存的，不是平台上的公钥，是公钥对应的
-    protected $return_url;//支付回调地址
-    protected $notify_url;//支付异步通知
+    protected $app_id='';//appid
+    protected $private_key='';//应用私钥，生成的时候保存的，不是平台上的公钥，是公钥对应的
+    protected $return_url='';//支付回调地址
+    protected $notify_url='';//支付异步通知
 
     /*订单信息*/
-    protected $out_trade_no;//订单号
-    protected $total_amount;//订单总金额
-    protected $subject;//订单标题
-    protected $body;//订单描述
+    protected $out_trade_no='';//订单号
+    protected $total_amount='';//订单总金额
+    protected $subject='';//订单标题
+    protected $body='';//订单描述
 
     /*默认信息*/
     protected $gate_way = 'https://openapi.alipay.com/gateway.do';//https://openapi.alipaydev.com/gateway.do;//沙箱模式
