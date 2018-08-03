@@ -1,11 +1,6 @@
 <?php
 class Loader
 {
-    /* 路径映射 */
-    public static $vendorMap = array(
-        'wycto\pay' => __DIR__ . '/../src',
-    );
-
     /**
      * 自动加载器
      */
@@ -24,7 +19,7 @@ class Loader
     {
         $vendor = substr($class, 0, strpos($class, '\\')); // 顶级命名空间
         $vendor .= DIRECTORY_SEPARATOR . "pay";
-        $vendorDir = self::$vendorMap[$vendor]; // 文件基目录
+        $vendorDir = __DIR__ . '/../src'; // 文件基目录
         $filePath = substr($class, strlen($vendor)) . '.php'; // 文件相对路径
         return strtr($vendorDir . $filePath, '\\', DIRECTORY_SEPARATOR); // 文件标准路径
     }
