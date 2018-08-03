@@ -12,13 +12,13 @@ abstract class Pay
 
     const WXPAY = 'wxpay';
 
-    static function getApp($pay = self::ALIPAY, array $config = array()) {
+    static function getApp($pay = self::ALIPAY, $config = array(),$gateway='web') {
 
         if (strtolower($pay) == self::ALIPAY) {
-            $app = Alipay::init($config);
+            $app = Alipay::init($config,$gateway);
         }
         else if (strtolower($pay) == self::WXPAY) {
-            $app = WxPay::init($config);
+            $app = WxPay::init($config,$gateway);
         }
         else {
             return false;
