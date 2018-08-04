@@ -1,21 +1,14 @@
 <?php
 namespace wycto\pay\alipay;
-class WeiXin
+class AliPayQuery
 {
-
     /*配置信息*/
     protected $app_id='';//appid
     protected $private_key='';//应用私钥，生成的时候保存的，不是平台上的公钥，是公钥对应的
-    protected $return_url='';//支付回调地址
-    protected $notify_url='';//支付异步通知
-    protected $apjs_src = 'ap.js';
-    protected $jump_url = "pay.html";
 
     /*订单信息*/
     protected $out_trade_no='';//订单号
-    protected $total_amount='';//订单总金额
-    protected $subject='';//订单标题
-    protected $body='';//订单描述
+    protected $trade_no='';//平台订单号
 
     /*默认信息*/
     protected $api_url = 'https://openapi.alipay.com/gateway.do';//https://openapi.alipaydev.com/gateway.do;//沙箱模式
@@ -24,14 +17,13 @@ class WeiXin
 
     public function __construct($config=array())
     {
-        if(count($config)){
-            foreach ($config as $key=>$value){
-                if(isset($this->$key)){
-                    $this->$key = $value;
-                }
+        foreach ($config as $key=>$value){
+            if(isset($this->$key)){
+                $this->$key = $value;
             }
         }
     }
+
 
     /**
      * 设置appid
@@ -39,25 +31,7 @@ class WeiXin
      */
     public function setAppid($app_id)
     {
-        $this->app_id = $app_id;
-    }
-
-    /**
-     * 设置支付回调地址
-     * @param unknown $return_url 回调地址
-     */
-    public function setReturnUrl($return_url)
-    {
-        $this->return_url = $return_url;
-    }
-
-    /**
-     * 设置支付异步通知地址
-     * @param unknown $notify_url 异步通知地址
-     */
-    public function setNotifyUrl($notify_url)
-    {
-        $this->notify_url = $notify_url;
+    	$this->app_id = $app_id;
     }
 
     /**
@@ -66,21 +40,21 @@ class WeiXin
      */
     public function setPrivateKey($private_key)
     {
-        $this->private_key = $private_key;
+    	$this->private_key = $private_key;
     }
 
     /**
-     * 设置订单金额
-     * @param unknown $payAmount
+     * 设置平台订单号
+     * @param unknown $trade_no
      */
-    public function setTotalAmount($total_amount)
+    public function setTradeNo($trade_no)
     {
-        $this->total_amount = $total_amount;
+        $this->trade_no = $trade_no;
     }
 
     /**
      * 设置订单号 商户网站唯一订单号
-     * @param string $out_trade_no
+     * @param unknown $out_trade_no
      */
     public function setOutTradeNo($out_trade_no)
     {
@@ -88,26 +62,8 @@ class WeiXin
     }
 
     /**
-     * 设置 商品的标题/交易标题/订单标题/订单关键字等
-     * @param string $subject
-     */
-    public function setSubject($subject)
-    {
-        $this->subject = $subject;
-    }
-
-    /**
-     * 设置 商品的标题/交易标题/订单标题/订单关键字等
-     * @param string $body
-     */
-    public function setBody($body)
-    {
-        $this->body = $body;
-    }
-
-    /**
-     * 设置网关，默认是沙箱测试网管
-     * @param string $api_url 接口地址
+     * 接口地址，默认是沙箱模式
+     * @param unknown $api_url 接口地址
      */
     public function setApiUrl($api_url)
     {
@@ -116,7 +72,7 @@ class WeiXin
 
     /**
      * 签名类型
-     * @param string $sign_type 默认是RSA2
+     * @param unknown $sign_type 默认是RSA2
      */
     public function setSignType($sign_type)
     {
@@ -124,85 +80,93 @@ class WeiXin
     }
 
     /**
-     * 微信端的js文件路劲
-     * @param unknown $apjs_src 默认根目录的ap.js
-     */
-    public function setApjsSrc($apjs_src)
-    {
-        $this->apjs_src = $apjs_src;
-    }
-
-    /**
-     * 跳转地址的页面提示弟子
-     * @param unknown $jump_url 默认是根目录的pay.html
-     */
-    public function setJumpUrl($jump_url)
-    {
-        $this->jump_url = $jump_url;
-    }
-
-    /**
-     * 发起订单
-     * @param float $total_amount 收款总费用 单位元
-     * @param string $out_trade_no 唯一的订单号
-     * @param string $subject 订单名称
-     * @param string $notify_url 支付结果通知url 不要有问号
-     * @param string $timestamp 订单发起时间
+     * 查询请求
      * @return array
      */
-    public function Pay($now=true)
+    public function query($now=true)
     {
         //请求参数
         $requestConfigs = array(
             'out_trade_no'=>$this->out_trade_no,
-            'product_code'=>'QUICK_WAP_WAY',
-            'total_amount'=>$this->total_amount, //单位 元
-            'subject'=>$this->subject,  //订单标题
-            'body' => $this->body//订单描述
+            'trade_no'=>$this->trade_no
         );
         $commonConfigs = array(
             //公共参数
             'app_id' => $this->app_id,
-            'method' => 'alipay.trade.wap.pay',             //接口名称
-            'format' => 'JSON',
-            'return_url' => $this->return_url,
             'charset'=>$this->charset,
+            'method' => 'alipay.trade.query',//接口名称，手机支付
+            'format' => 'JSON',
             'sign_type'=>$this->sign_type,
             'timestamp'=>date('Y-m-d H:i:s'),
             'version'=>'1.0',
-            'notify_url' => $this->notify_url,
             'biz_content'=>json_encode($requestConfigs),
         );
         $commonConfigs["sign"] = $this->makerSign($commonConfigs, $commonConfigs['sign_type']);
-        //return $commonConfigs;
-
         //执行
         $queryStr = http_build_query($commonConfigs);
         if($now){
-            if($this->isWeixin()){
-                //是微信
-                header('Content-type:text/html; Charset=utf-8');
-                $html = <<<EOF
-                <script type="text/javascript" src="{$this->apjs_src}"></script>
-                <script>
-                var gotoUrl = '{$this->api_url}?{$queryStr}';
-                _AP.pay(gotoUrl,'{$this->jump_url}');
-                </script>
-EOF;
-                echo $html;
-            }else{
-                //不是微信
-                header("Location:{$this->api_url}?{$queryStr}");
-            }
+            return $this->curlPost($this->api_url,$commonConfigs);
         }else{
             return $queryStr;
         }
     }
 
+    public function curlPost($url = '', $postData = '', $options = array())
+    {
+        if (is_array($postData)) {
+            $postData = http_build_query($postData);
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30); //设置cURL允许执行的最长秒数
+        if (!empty($options)) {
+            curl_setopt_array($ch, $options);
+        }
+        //https请求 不验证证书和host
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
+
+    /**
+     * 构建请求表单
+     * @param $para_temp 请求参数数组
+     * @return 提交表单HTML文本
+     */
+    protected function buildRequestForm($para_temp) {
+        $sHtml = "<form id='alipaysubmit' name='alipaysubmit' action='" . $this->api_url . "?charset=".$this->charset."' method='POST'>";
+        while (list ($key, $val) = each ($para_temp)) {
+            if (false === $this->checkEmpty($val)) {
+                $val = str_replace("'","&apos;",$val);
+                $sHtml.= "<input type='hidden' name='".$key."' value='".$val."'/>";
+            }
+        }
+        //submit按钮控件请不要含有name属性
+        $sHtml = $sHtml."<input type='submit' value='ok' style='display:none;''></form>";
+        $sHtml = $sHtml."<script>document.forms['alipaysubmit'].submit();</script>";
+        return $sHtml;
+    }
+
+    /**
+     * 生成签名
+     * @param unknown $params
+     * @param string $signType
+     */
     public function makerSign($params, $signType = "RSA") {
         return $this->sign($this->getSignContent($params), $signType);
     }
 
+    /**
+     * 生成签名
+     * @param unknown $data
+     * @param string $signType 签名类型
+     * @return unknown
+     */
     protected function sign($data, $signType = "RSA") {
         $priKey=$this->private_key;
         $res = "-----BEGIN RSA PRIVATE KEY-----\n" .
@@ -233,6 +197,11 @@ EOF;
         return false;
     }
 
+    /**
+     * 拼接请求参数
+     * @param unknown $params
+     * @return string
+     */
     public function getSignContent($params) {
         ksort($params);
         $stringToBeSigned = "";
@@ -267,12 +236,5 @@ EOF;
             }
         }
         return $data;
-    }
-
-    function isWeixin(){
-        if ( strpos($_SERVER['HTTP_USER_AGENT'],'MicroMessenger') !== false ) {
-            return true;
-        }
-        return false;
     }
 }

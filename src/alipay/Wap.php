@@ -15,7 +15,7 @@ class Wap
     protected $body='';//订单描述
 
     /*默认信息*/
-    protected $gate_way = 'https://openapi.alipay.com/gateway.do';//https://openapi.alipaydev.com/gateway.do;//沙箱模式
+    protected $api_url = 'https://openapi.alipay.com/gateway.do';//https://openapi.alipaydev.com/gateway.do;//沙箱模式
     protected $charset = 'utf8';//字符集，默认utf8
     protected $sign_type = 'RSA2';//签名类型，新建应用只能用RSA2
 
@@ -92,12 +92,21 @@ class Wap
     }
 
     /**
-     * 设置网关，默认是沙箱测试网管
-     * @param unknown $gate_way 接口地址
+     * 设置 商品的标题/交易标题/订单标题/订单关键字等
+     * @param string $body
      */
-    public function setGateWay($gate_way)
+    public function setBody($body)
     {
-        $this->gate_way = $gate_way;
+        $this->body = $body;
+    }
+
+    /**
+     * 设置网关，默认是沙箱测试网管
+     * @param unknown $api_url 接口地址
+     */
+    public function setApiUrl($api_url)
+    {
+        $this->api_url = $api_url;
     }
 
     /**
@@ -152,7 +161,7 @@ class Wap
      * @return 提交表单HTML文本
      */
     protected function buildRequestForm($para_temp) {
-        $sHtml = "<form id='alipaysubmit' name='alipaysubmit' action='" . $this->gate_way . "?charset=".$this->charset."' method='POST'>";
+        $sHtml = "<form id='alipaysubmit' name='alipaysubmit' action='" . $this->api_url . "?charset=".$this->charset."' method='POST'>";
         while (list ($key, $val) = each ($para_temp)) {
             if (false === $this->checkEmpty($val)) {
                 $val = str_replace("'","&apos;",$val);

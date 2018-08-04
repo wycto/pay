@@ -9,7 +9,7 @@ namespace wycto\pay;
 
 use wycto\pay\alipay\Wap;
 use wycto\pay\alipay\WeiXin;
-
+use wycto\pay\alipay\AliPayQuery;
 class Alipay extends PayAbstract
 {
     // 全局唯一实例
@@ -18,25 +18,28 @@ class Alipay extends PayAbstract
     private $_config = array();
     //支付终端
     private $_gateway = 'web';//默认电脑
-    //类地图
-    private $_class_map = array(
-        'web'=>'Web',
-        'wap'=>'Wap',
-        'weixin' => 'WeiXin'
-    );
 
-    private function __construct($config, $gateway)
+    private function __construct($config)
     {
         $this->_config = $config;
-        $this->_gateway = $gateway;
     }
 
-    static function init($config, $gateway)
+    static function init($config)
     {
         if (self::$_app == null) {
-            self::$_app = new Alipay($config, $gateway);
+            self::$_app = new Alipay($config);
         }
-        return self::$_app->run();
+        return self::$_app;
+    }
+
+    function setConfig($config){
+        $this->_config = array_merge($this->_config,$config);
+        return $this;
+    }
+
+    function gateway($gateway){
+        $this->_gateway = $gateway;
+        return $this;
     }
 
     /**
@@ -45,7 +48,7 @@ class Alipay extends PayAbstract
      * @param string $gateway
      *            [web:电脑网站支付;wap:手机网站支付;app:APP支付;scan:扫码支付]
      */
-    function run()
+    function meta()
     {
         if ($this->_gateway == 'wap') {
             // 手机端
@@ -53,8 +56,13 @@ class Alipay extends PayAbstract
         } elseif ($this->_gateway == 'weixin') {
             // 微信
             return new WeiXin($this->_config);
-        } else {
+        } elseif($this->_gateway == 'web') {
             // 电脑
+        }elseif($this->_gateway == 'query'){
+            //查询
+            return new AliPayQuery($this->_config);
+        }else{
+            return null;
         }
     }
 
@@ -62,7 +70,9 @@ class Alipay extends PayAbstract
     {}
 
     function notify()
-    {}
+    {
+
+    }
 
     function response()
     {

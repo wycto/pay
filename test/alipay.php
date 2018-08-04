@@ -27,5 +27,5 @@ $aliPay->setOutTradeNo($outTradeNo);
 $aliPay->setSubject($orderName);
 $aliPay->setGateWay('https://openapi.alipaydev.com/gateway.do');
 $sHtml = $aliPay->pay(true);
-//echo $sHtml;
+echo $sHtml;
  ?>

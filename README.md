@@ -1,5 +1,7 @@
 # 支付接口类库
 
+==此版本文档适用于 0.1.5==
+
 ==请使用>=0.1.4版本的代码，之前的代码作为调试，不可用==
 
 简单配置，轻松使用
@@ -10,12 +12,33 @@
 
 
 需要支付类型直接传参：
-PayFactory::getApp('alipay',config,'weixin');
+PayFactory::getApp('alipay',config);
+
 参数一：支付种类【alipay：支付宝；weixin：微信】
 
-参数二：支付的配置
+参数二：支付的配置【app_id、private_key、......】
 
-参数三：支付的终端【web：电脑；wap：手机网站；weixin：微信公众号】
+
+```
+$pay = PayFactory::getApp('alipay',$config)->gateway('weixin')->meta();//微信公众号
+
+或者
+
+$pay = PayFactory::getApp('alipay')->setConfig($config)->gateway('wap')->meta();//手机端
+
+或者
+
+$pay = PayFactory::getApp('alipay',$config)->gateway('web')->meta();//电脑端
+
+或者
+
+$pay = PayFactory::getApp('alipay')->setConfig($config)->gateway('query')->meta();//查询
+
+支付：$pay->pay();
+查询：$pay->query();
+```
+
+
 
 ---
 ## 使用方法：
@@ -42,7 +65,7 @@ $this->config['notify_url'] = 'http://' . $_SERVER['HTTP_HOST'] . url('wap::paym
 $this->config['jump_url'] = 'http://' . $_SERVER['HTTP_HOST'] . url('wap::payment/weixin');
 
 //使用工厂类
-$aliPay = PayFactory::getApp('alipay', $this->config, 'weixin');//微信传参weixin，手机网站wap，电脑网站web
+$aliPay = PayFactory::getApp('alipay', $this->config)->gateway('weixin')->meta();//微信传参weixin，手机网站wap，电脑网站web
 $aliPay->setSubject($subject);
 $body = "全栈小子-" . $order->subject?$order->subject:"本次支付" . $order->price . "元";
 $aliPay->setBody($body);
@@ -120,3 +143,11 @@ array(24) {
 > 根据接收到的数据，进行支付后的业务处理，订单号：out_trade_no；
 >
 > 注意，尽可能多的进行参数验收，比如验证：app_id、total_amount
+
+### 查询
+
+```
+$pay = PayFactory::getApp('alipay')->setConfig($config)->gateway('query')->meta();//查询
+
+$pay->query();
+```
