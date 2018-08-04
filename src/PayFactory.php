@@ -6,7 +6,7 @@
  * Copyright (c) 2016~2099 http://www.wycto.com All rights reserved.
  */
 namespace wycto\pay;
-abstract class Pay
+abstract class PayFactory
 {
     const ALIPAY = 'alipay';
 

@@ -1,62 +1,122 @@
 # 支付接口类库
+
+==请使用>=0.1.4版本的代码，之前的代码作为调试，不可用==
+
 简单配置，轻松使用
 
-封装了工厂类
+封装了工厂类 **PayFactory**
 
-需要支付类型直接传参
-
-<?php
-
-include 'Loader.php'; // 引入加载器
-
-spl_autoload_register('Loader::autoload'); // 注册自动加载
-
-use wycto\pay\Pay;
-
-$config = array('apjs_src'=>'alipay/weixin/ap.js','jump_url'=>"alipay/weixin/pay.html");
-
-$aliPay = Pay::getApp('alipay',$config,'weixin');
-
-/*** 请填写以下配置信息 ***/
-
-$appid = '2016091300504235';
-//https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
-
-$rsaPrivateKey="MIIEowIBAAKCAQEA4PRvr8RaKaqUZc/eWqvISuclgD/QcSJ/2Z7YpTk9yZeMwy+uX4CJlSWFzXzaKYYsg5h0AUlK2b2wUdcGyJvPhiBkcvoLiQ9lV+CRU7WpvVk4dYQq0tN8L/BkcTMidSPePaz0ZzayXHAwR9m/qWM3Vxr3rU6cHIxA4mZLqMLs0HSn622OYVRwquMNAXWVxXg0G/DbXGe7M8/QJebEN7yUtbN8BaEJESXyMqu/gXtntlejB3syw6b4UONRb2p3ph4N5vfzyDrvkSbaZNsuHj4LvoHE/53CuAH/KJeE8GUcsldQCWe2zXPDBBg3hY8ObNVbdpWr1PZqq8Y7mxqIhr3frwIDAQABAoIBAHLhwkv0LcuLlr+r+bU6d05xX0Bw1oWAheRgb+lpIznZkIR5zEZvgVPO1tdLRKriH8eQyuWBRZ2PdwVEl+1JTSEFV+cz9UIov6uyPuWOJ8JQVzoEpk4GvSxKSzFYWOeTysKamjI/x7TXgoCfHndl+PQeDJDQTX9yzQwSC9+CtKf7hfYfr8hK+mO3JboR/1czFGm0+p29cwbyjDcMElpMqiOPrrMv5U+1VzF6nhWqx+8zGHGjAQY/B+aQvsm8CLf/MJC67LrlE5BNppKHyr7IECjXbeExe8gttADyqTyguiwZNaep3lSsf/ojai+g9PNaCVyeGHbR7an4P4ZZkZ4FmLkCgYEA/QLhR1o3f7TvI1YUghovYCBSosRskVO1UqOpyFYxtaG2u22wzIzxu/9zKVj0WLa2j2fNgp1Z5nH6a6tB2dxZrQwNwH2X6xwOZYVoJUJhPLtYxu2x0m6hOxyodAyGyIoVYNbyGhMAVYm6D0MsH478flhUEf/+WbxR/yVEteVD61sCgYEA45y2TRIPd2RYRSvUKo2QvuWGbjzCnA/1QxEb9+Sj30hp/dDpCPVbOMGVTzppYk9oHFCdx/F+KrHE0qAG2c0KoP/JSplaT7gov+Q+DnIeTm2NKBKlP3pbjjdvfylhtQ3xSVzqDwN51w7gECw2F0nbXfs4jy9xyVun1t0KbJ71UT0CgYEA4lifPXwiRmeRwKUTt8jBNVf1VZQwJFskzgeIrqcd1YYUudzJ3FUDNdK0LftcrbjX3bdZjU5DzPuOsqAFS2fr+fncm6ZAMJ9q6bvNjfeykehw5ZZkDQPXzdA3i4phUirmMTpaYKU7GUsbXugTIzCCBm3y2B+SZqkpGf83VxsCBh0CgYAxraKcb7SwelZJwqcsInnVMIOGy/wt083UNYfFM0IRGd0IaPBz5Blk6duMz1LxAiPXCkFlwm+nIeWzkvnrz7TiLvHgNlhfzfIW79objQzQUVjdxjQLBsm04KSVPJL20XQ4bu8nF7sgFT8SSJQFwTj/6jUOC2zqZfbcDqKX0pn4gQKBgEisZMgl2PekURjo/5x/hZ8ENcHVA8VuQ+WSgucp4I3YVWK1KnukDKtqvOF7X7Upw48OtKobAwhwLVICvET8tXXEkESnPqqMxc1DvYUdIJvgru1cdGgm4jOFqewQFPfqy/a9tLeYg32oe6S4OH7hGDn8b9ees9SGREraX7Bzh4UG";		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
-
-$signType = 'RSA2';			//签名算法类型，支持RSA2和RSA，推荐使用RSA2
-
-$returnUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/alipay/return.php';     //付款成功后的同步回调地址
-
-$notifyUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/alipay/notify.php';     //付款成功后的异步回调地址
+---
 
 
-$outTradeNo = uniqid();     //你自己的商品订单号
+需要支付类型直接传参：
+PayFactory::getApp('alipay',config,'weixin');
+参数一：支付种类【alipay：支付宝；weixin：微信】
 
-$payAmount = 0.01;          //付款金额，单位:元
+参数二：支付的配置
 
-$orderName = '支付测试';    //订单标题
+参数三：支付的终端【web：电脑；wap：手机网站；weixin：微信公众号】
 
-/*** 配置结束 ***/
+---
+## 使用方法：
+### 1.支付
 
-$aliPay->setAppid($appid);
+```
+use wycto\pay\PayFactory;
+protected $_payconfig = array(
+		'app_id'=>"2018062060400732",
+		'private_key'=>"",//生成平台公钥的时候对应的私钥
+		'apjs_src' => '/static/js/ap.js',
+		'jump_url' => "http://www.wycto.cn",
+		'return_url'=> 'http://www.wycto.cn',
+		'notify_url'=> 'http://www.wycto.cn'
+);
 
-$aliPay->setReturnUrl($returnUrl);
+//支付宝支付
+$out_trade_no = $order->number;     //你自己的商品订单号
+$total_amount = $order->price;//付款金额，单位:元
+$subject = $order->subject;    //订单标题
 
-$aliPay->setNotifyUrl($notifyUrl);
+$this->config['return_url'] = 'http://' . $_SERVER['HTTP_HOST'] . url('wap::payment/return');
+$this->config['notify_url'] = 'http://' . $_SERVER['HTTP_HOST'] . url('wap::payment/notify');
+$this->config['jump_url'] = 'http://' . $_SERVER['HTTP_HOST'] . url('wap::payment/weixin');
 
-$aliPay->setPrivateKey($rsaPrivateKey);
+//使用工厂类
+$aliPay = PayFactory::getApp('alipay', $this->config, 'weixin');//微信传参weixin，手机网站wap，电脑网站web
+$aliPay->setSubject($subject);
+$body = "全栈小子-" . $order->subject?$order->subject:"本次支付" . $order->price . "元";
+$aliPay->setBody($body);
+$aliPay->setTotalAmount($total_amount);
+$aliPay->setOutTradeNo($out_trade_no);
+$aliPay->Pay();
+```
 
-$aliPay->setTotalAmount($payAmount);
+### 跳转地址处理：
 
-$aliPay->setOutTradeNo($outTradeNo);
+```
+var_dump($_GET);
 
-$aliPay->setSubject($orderName);
+array(12) {
+  ["total_amount"]=>
+  string(4) "0.01"
+  ["timestamp"]=>
+  string(19) "2018-08-04 15:48:19"
+  ["sign"]=>
+  string(344) "cFs+YT+Xl6c6u9jnz3VSB8wcro/2haiUMelU+23s2JCr8MJhJqsNXQnY36qVKUcffbkONPKJtZKMjtnBYjXBBRLgWVhrYUpH7zOODL9OILQJ2FNY+XyTAxXBrMliXlZ/KsGqRV+79YlO1uvfCMcJcKXdKJgT7gzvAQOsRxwhhTHNVWaMO5QdLe3Ve2RHZcwbedoF+4lBr7A9JZ5NMKZRKGgpR18jlDYhnpvIH9INahAcBKoZUqx6L8Xj5ddr3XIdJfZnGhBLGle66V+DROvJX6OkzRABP5uEp0Q4D1ZquKqmS4gHTt4wk/xgNZJ5VCd+5WeZoBhpYgpVWLKhmVatcw=="
+  ["trade_no"]=>
+  string(28) "2018080421001004670513036032"
+  ["sign_type"]=>
+  string(4) "RSA2"
+  ["auth_app_id"]=>
+  string(16) "2018062060400732"
+  ["charset"]=>
+  string(4) "utf8"
+  ["seller_id"]=>
+  string(16) "2088721870519422"
+  ["method"]=>
+  string(27) "alipay.trade.wap.pay.return"
+  ["app_id"]=>
+  string(16) "2018062060400732"
+  ["out_trade_no"]=>
+  string(13) "5b655a3ab7041"
+  ["version"]=>
+  string(3) "1.0"
+}
+```
 
-$aliPay->setGateWay('https://openapi.alipaydev.com/gateway.do');
+### 异步通知处理：
 
-$sHtml = $aliPay->pay(true);
+```
+var_dump($_POST);
+array(24) {
+    gmt_create=>2018-08-04 15:55:09
+	charset=>utf8,
+	seller_email=>52645446@qq.com,
+	subject=>支付测试,
+	sign=>ePutXvBuc2gsFaTPVFUJOmOUuCGwylDcwITYirNI+nH7bW2biA9hfIGtU8hYy2w4uHwxC0qi9pXqoCzv4gKeB69vrQmgwyO0ZGCyBQUXHwYUSAxfH5fpTO/s993bRFO3jEODW9xb0pW+Zg1ycTtDTtrhMvL657iXJekrDyUpshEN5K+dHlNbGYkFiGDjEcQaSVqzTnwcxFWIxlMwGq+p1hMIqCZcxom1iCnHH/I4h7nwtW/9FBZ8eTP4u/sRJKU0KdWOR1CnHwP1QzvFvm0KdstitWW+Iam1NrdbiHYdqRmwSrAR3x89UdfqGFl3q9G79La7w11hxSZZUKxrxYo7Vg==,
+	buyer_id=>2088802533010673,
+	invoice_amount=>0.01,
+	notify_id=>1ef231b418c5bd03a972c491da3bf6cl69,
+	fund_bill_list=>[{"amount":"0.01","fundChannel":"ALIPAYACCOUNT"}],
+	notify_type=>trade_status_sync,
+	trade_status=>TRADE_SUCCESS,
+	receipt_amount=>0.01,
+	buyer_pay_amount=>0.01,
+	app_id=>2018062060400732,
+	sign_type=>RSA2,
+	seller_id=>2088721870519422,
+	gmt_payment=>2018-08-04 15:55:11,
+	notify_time=>2018-08-04 15:55:11,
+	version=>1.0,
+	out_trade_no=>5b655bd759e66,
+	total_amount=>0.01,
+	trade_no=>2018080421001004670510094404,
+	auth_app_id=>2018062060400732,
+	buyer_logon_id=>294***@qq.com,
+	point_amount=>0.00
+}
+```
 
-//echo $sHtml;
-
- ?>
+> 根据接收到的数据，进行支付后的业务处理，订单号：out_trade_no；
+>
+> 注意，尽可能多的进行参数验收，比如验证：app_id、total_amount

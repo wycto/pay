@@ -80,7 +80,7 @@ class WeiXin
 
     /**
      * 设置订单号 商户网站唯一订单号
-     * @param unknown $out_trade_no
+     * @param string $out_trade_no
      */
     public function setOutTradeNo($out_trade_no)
     {
@@ -89,7 +89,7 @@ class WeiXin
 
     /**
      * 设置 商品的标题/交易标题/订单标题/订单关键字等
-     * @param unknown $subject
+     * @param string $subject
      */
     public function setSubject($subject)
     {
@@ -97,8 +97,17 @@ class WeiXin
     }
 
     /**
+     * 设置 商品的标题/交易标题/订单标题/订单关键字等
+     * @param string $body
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+    }
+
+    /**
      * 设置网关，默认是沙箱测试网管
-     * @param unknown $gate_way 接口地址
+     * @param string $gate_way 接口地址
      */
     public function setGateWay($gate_way)
     {
@@ -107,7 +116,7 @@ class WeiXin
 
     /**
      * 签名类型
-     * @param unknown $sign_type 默认是RSA2
+     * @param string $sign_type 默认是RSA2
      */
     public function setSignType($sign_type)
     {

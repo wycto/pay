@@ -1,10 +1,10 @@
 <?php
 include 'Loader.php'; // 引入加载器
 spl_autoload_register('Loader::autoload'); // 注册自动加载
-use wycto\pay\Pay;
+use wycto\pay\PayFactory;
 
 $config = array('apjs_src'=>'alipay/weixin/ap.js','jump_url'=>"alipay/weixin/pay.html");
-$aliPay = Pay::getApp('alipay',$config,'weixin');
+$aliPay = PayFactory::getApp('alipay',$config,'weixin');
 
 /*** 请填写以下配置信息 ***/
 $appid = '2016091300504235';  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
