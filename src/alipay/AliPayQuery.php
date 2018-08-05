@@ -17,13 +17,14 @@ class AliPayQuery
 
     public function __construct($config=array())
     {
-        foreach ($config as $key=>$value){
-            if(isset($this->$key)){
-                $this->$key = $value;
+        if(count($config)){
+            foreach ($config as $key=>$value){
+                if(isset($this->$key)){
+                    $this->$key = $value;
+                }
             }
         }
     }
-
 
     /**
      * 设置appid

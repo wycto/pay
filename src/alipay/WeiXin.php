@@ -133,7 +133,7 @@ class WeiXin
     }
 
     /**
-     * 跳转地址的页面提示弟子
+     * 跳转地址的页面提示地址
      * @param unknown $jump_url 默认是根目录的pay.html
      */
     public function setJumpUrl($jump_url)
@@ -150,7 +150,7 @@ class WeiXin
      * @param string $timestamp 订单发起时间
      * @return array
      */
-    public function Pay($now=true)
+    public function pay($now=true)
     {
         //请求参数
         $requestConfigs = array(
@@ -165,11 +165,11 @@ class WeiXin
             'app_id' => $this->app_id,
             'method' => 'alipay.trade.wap.pay',             //接口名称
             'format' => 'JSON',
-            'return_url' => $this->return_url,
             'charset'=>$this->charset,
             'sign_type'=>$this->sign_type,
             'timestamp'=>date('Y-m-d H:i:s'),
             'version'=>'1.0',
+	    'return_url' => $this->return_url,
             'notify_url' => $this->notify_url,
             'biz_content'=>json_encode($requestConfigs),
         );

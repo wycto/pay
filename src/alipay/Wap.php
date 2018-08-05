@@ -21,9 +21,11 @@ class Wap
 
     public function __construct($config=array())
     {
-        foreach ($config as $key=>$value){
-            if(isset($this->$key)){
-                $this->$key = $value;
+        if(count($config)){
+            foreach ($config as $key=>$value){
+                if(isset($this->$key)){
+                    $this->$key = $value;
+                }
             }
         }
     }
@@ -75,7 +77,7 @@ class Wap
 
     /**
      * 设置订单号 商户网站唯一订单号
-     * @param unknown $out_trade_no
+     * @param string $out_trade_no
      */
     public function setOutTradeNo($out_trade_no)
     {
@@ -84,7 +86,7 @@ class Wap
 
     /**
      * 设置 商品的标题/交易标题/订单标题/订单关键字等
-     * @param unknown $subject
+     * @param string $subject
      */
     public function setSubject($subject)
     {
@@ -102,7 +104,7 @@ class Wap
 
     /**
      * 设置网关，默认是沙箱测试网管
-     * @param unknown $api_url 接口地址
+     * @param string $api_url 接口地址
      */
     public function setApiUrl($api_url)
     {
@@ -111,7 +113,7 @@ class Wap
 
     /**
      * 签名类型
-     * @param unknown $sign_type 默认是RSA2
+     * @param string $sign_type 默认是RSA2
      */
     public function setSignType($sign_type)
     {
@@ -120,6 +122,11 @@ class Wap
 
     /**
      * 发起订单
+     * @param float $total_amount 收款总费用 单位元
+     * @param string $out_trade_no 唯一的订单号
+     * @param string $subject 订单名称
+     * @param string $notify_url 支付结果通知url 不要有问号
+     * @param string $timestamp 订单发起时间
      * @return array
      */
     public function pay($now=true)
@@ -135,9 +142,9 @@ class Wap
         $commonConfigs = array(
             //公共参数
             'app_id' => $this->app_id,
-            'charset'=>$this->charset,
-            'method' => 'alipay.trade.wap.pay',//接口名称，手机支付
+	    'method' => 'alipay.trade.wap.pay',//接口名称，手机支付
             'format' => 'JSON',
+	    'charset'=>$this->charset,
             'return_url' => $this->return_url,
             'notify_url' => $this->notify_url,
             'sign_type'=>$this->sign_type,
