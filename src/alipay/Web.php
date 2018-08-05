@@ -1,102 +1,156 @@
 <?php
-header('Content-type:text/html; Charset=utf-8');
-/*** 请填写以下配置信息 ***/
-$appid = 'xxxxx';			//https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
-$returnUrl = 'http://www.xxx.com/alipay/return.php';     //付款成功后的同步回调地址
-$notifyUrl = 'http://www.xxx.com/alipay/notify.php';     //付款成功后的异步回调地址
-$outTradeNo = uniqid();     //你自己的商品订单号，不能重复
-$payAmount = 0.01;          //付款金额，单位:元
-$orderName = '支付测试';    //订单标题
-$signType = 'RSA2';			//签名算法类型，支持RSA2和RSA，推荐使用RSA2
-$rsaPrivateKey='xxxx';		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
-/*** 配置结束 ***/
-$aliPay = new AlipayService();
-$aliPay->setAppid($appid);
-$aliPay->setReturnUrl($returnUrl);
-$aliPay->setNotifyUrl($notifyUrl);
-$aliPay->setRsaPrivateKey($rsaPrivateKey);
-$aliPay->setTotalFee($payAmount);
-$aliPay->setOutTradeNo($outTradeNo);
-$aliPay->setOrderName($orderName);
-$sHtml = $aliPay->doPay();
-echo $sHtml;
-
-class AlipayService
+/**
+ * Alipay 支付宝支付-电脑网站支付
+ * @author : weiyi <294287600@qq.com>
+ * Licensed ( http://www.wycto.com )
+ * Copyright (c) 2018 http://www.wycto.com All rights reserved.
+ */
+namespace wycto\pay\alipay;
+class Web
 {
-    protected $appId;
-    protected $returnUrl;
-    protected $notifyUrl;
-    protected $charset;
-    //私钥值
-    protected $rsaPrivateKey;
-    protected $totalFee;
-    protected $outTradeNo;
-    protected $orderName;
+    /*配置信息*/
+    protected $app_id='';//appid
+    protected $private_key='';//应用私钥，生成的时候保存的，不是平台上的公钥，是公钥对应的
+    protected $return_url='';//支付回调地址
+    protected $notify_url='';//支付异步通知
 
-    public function __construct()
+    /*订单信息*/
+    protected $out_trade_no='';//订单号
+    protected $total_amount='';//订单总金额
+    protected $subject='';//订单标题
+    protected $body='';//订单描述
+
+    /*默认信息*/
+    protected $api_url = 'https://openapi.alipay.com/gateway.do';//https://openapi.alipaydev.com/gateway.do;//沙箱模式
+    protected $charset = 'utf8';//字符集，默认utf8
+    protected $sign_type = 'RSA2';//签名类型，新建应用只能用RSA2
+
+    public function __construct($config=array())
     {
-        $this->charset = 'utf8';
+        if(count($config)){
+            foreach ($config as $key=>$value){
+                if(isset($this->$key)){
+                    $this->$key = $value;
+                }
+            }
+        }
     }
 
-    public function setAppid($appid)
+    /**
+     * 设置appid
+     * @param unknown $app_id
+     */
+    public function setAppid($app_id)
     {
-        $this->appId = $appid;
+        $this->app_id = $app_id;
     }
 
-    public function setReturnUrl($returnUrl)
+    /**
+     * 设置支付回调地址
+     * @param unknown $return_url 回调地址
+     */
+    public function setReturnUrl($return_url)
     {
-        $this->returnUrl = $returnUrl;
+        $this->return_url = $return_url;
     }
 
-    public function setNotifyUrl($notifyUrl)
+    /**
+     * 设置支付异步通知地址
+     * @param unknown $notify_url 异步通知地址
+     */
+    public function setNotifyUrl($notify_url)
     {
-        $this->notifyUrl = $notifyUrl;
+        $this->notify_url = $notify_url;
     }
 
-    public function setRsaPrivateKey($saPrivateKey)
+    /**
+     * 设置私钥
+     * @param unknown $private_key
+     */
+    public function setPrivateKey($private_key)
     {
-        $this->rsaPrivateKey = $saPrivateKey;
+        $this->private_key = $private_key;
     }
 
-    public function setTotalFee($payAmount)
+    /**
+     * 设置订单金额
+     * @param unknown $payAmount
+     */
+    public function setTotalAmount($total_amount)
     {
-        $this->totalFee = $payAmount;
+        $this->total_amount = $total_amount;
     }
 
-    public function setOutTradeNo($outTradeNo)
+    /**
+     * 设置订单号 商户网站唯一订单号
+     * @param string $out_trade_no
+     */
+    public function setOutTradeNo($out_trade_no)
     {
-        $this->outTradeNo = $outTradeNo;
+        $this->out_trade_no = $out_trade_no;
     }
 
-    public function setOrderName($orderName)
+    /**
+     * 设置 商品的标题/交易标题/订单标题/订单关键字等
+     * @param string $subject
+     */
+    public function setSubject($subject)
     {
-        $this->orderName = $orderName;
+        $this->subject = $subject;
+    }
+
+    /**
+     * 设置 商品的标题/交易标题/订单标题/订单关键字等
+     * @param string $body
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+    }
+
+    /**
+     * 设置网关，默认是沙箱测试网管
+     * @param string $api_url 接口地址
+     */
+    public function setApiUrl($api_url)
+    {
+        $this->api_url = $api_url;
+    }
+
+    /**
+     * 签名类型
+     * @param string $sign_type 默认是RSA2
+     */
+    public function setSignType($sign_type)
+    {
+        $this->sign_type = $sign_type;
     }
 
     /**
      * 发起订单
      * @return array
      */
-    public function doPay()
+    public function pay()
     {
         //请求参数
         $requestConfigs = array(
-            'out_trade_no'=>$this->outTradeNo,
+            'out_trade_no'=>$this->out_trade_no,
             'product_code'=>'FAST_INSTANT_TRADE_PAY',
-            'total_amount'=>$this->totalFee, //单位 元
-            'subject'=>$this->orderName,  //订单标题
+            'total_amount'=>$this->total_amount, //单位 元
+            'subject'=>$this->subject,  //订单标题
+            'body'=> $this->body
         );
         $commonConfigs = array(
             //公共参数
-            'app_id' => $this->appId,
+            'app_id' => $this->app_id,
             'method' => 'alipay.trade.page.pay',             //接口名称
             'format' => 'JSON',
-            'return_url' => $this->returnUrl,
+            'return_url' => $this->return_url,
             'charset'=>$this->charset,
-            'sign_type'=>'RSA2',
+            'sign_type'=>$this->sign_type,
             'timestamp'=>date('Y-m-d H:i:s'),
             'version'=>'1.0',
-            'notify_url' => $this->notifyUrl,
+            'notify_url' => $this->notify_url,
             'biz_content'=>json_encode($requestConfigs),
         );
         $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
@@ -128,7 +182,7 @@ class AlipayService
     }
 
     protected function sign($data, $signType = "RSA") {
-        $priKey=$this->rsaPrivateKey;
+        $priKey=$this->private_key;
         $res = "-----BEGIN RSA PRIVATE KEY-----\n" .
             wordwrap($priKey, 64, "\n", true) .
             "\n-----END RSA PRIVATE KEY-----";

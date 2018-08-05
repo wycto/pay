@@ -8,6 +8,7 @@
 namespace wycto\pay;
 
 use wycto\pay\alipay\Wap;
+use wycto\pay\alipay\Web;
 use wycto\pay\alipay\WeiXin;
 use wycto\pay\alipay\AliPayQuery;
 class Alipay extends PayAbstract
@@ -58,6 +59,7 @@ class Alipay extends PayAbstract
             return new WeiXin($this->_config);
         } elseif($this->_gateway == 'web') {
             // 电脑
+            return new Web($this->_config);
         }elseif($this->_gateway == 'query'){
             //查询
             return new AliPayQuery($this->_config);
@@ -83,17 +85,17 @@ class Alipay extends PayAbstract
               ["timestamp"]=>
               string(19) "2018-08-03 14:10:55"
               ["sign"]=>
-              string(344) "K5V8+Lk5alfos9rG5CRzTZSh5rFJAbruYtDzApal0D/QqnePcojZ5CiGJyjx96u+q+aimRKSRiuybeLfoPzhvsSZzO7qO9GBlnPYIS+rSB0Ozttmr0R5bKngfriDBC9qVfmwESA6r4qS6Ay9OVnK/Qgmj9A6FqZLL4SpzYUQohG5A8DNkdSgA3TuiXVr1L9TtsWyQk04HYhq1IpxuAgn0jxV0WYlxpIg4TU7nGyU3qpKnkw4Wb5kjnw8X7lLdOJ58/D8kpEIadyvCrgxTkYM0iZh5cD1l2dFOszz7r3PakzpiIDealze1j7EDwkBNap2Q33wQ1B7j+V6h8OxVjghXA=="
+              string(344) "K5V8+Lk5alfos9rG55CiGJyjx96u+q+aimRKSRiuybeLfoPzhvsSZzO7qO9GBlnPYIS+rSB0Ozttmr0R5bKngfriDBC9qVfmwESA6r4qS6Ay9OVnK/Qgmj9A6FqZLL4SpzYUQohG5A8DNkdSgA3TuiXVr1L9TtsWyQk04HYhq1IpxuAgn0jxV0WYlxpIg4TU7nGyU3qpKnkw4Wb5kjnw8X7lLdOJ58/D8kpEIadyvCrgxTkYM0iZh5cD1l2dFOszz7r3PakzpiIDealze1j7EDwkBNap2Q33wQ1B7j+V6h8OxVjghXA=="
               ["trade_no"]=>
               string(28) "2018080321001004670505864343"
               ["sign_type"]=>
               string(4) "RSA2"
               ["auth_app_id"]=>
-              string(16) "2018062060400732"
+              string(16) "2017062060400732"
               ["charset"]=>
               string(4) "utf8"
               ["seller_id"]=>
-              string(16) "2088721870519422"
+              string(16) "2087721870519422"
               ["method"]=>
               string(27) "alipay.trade.wap.pay.return"
               ["app_id"]=>

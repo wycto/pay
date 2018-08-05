@@ -1,6 +1,6 @@
 # 支付接口类库
 
-==此版本文档适用于 0.1.5==
+==此版本文档适用于 0.1.6==
 
 ==请使用>=0.1.4版本的代码，之前的代码作为调试，不可用==
 
@@ -37,7 +37,15 @@ $pay = PayFactory::getApp('alipay')->setConfig($config)->gateway('query')->meta(
 支付：$pay->pay();
 查询：$pay->query();
 ```
+gatewap() 方法:设置支付终端，即网关，默认为电脑网站支付
 
+web:电脑网站支付
+
+wap：手机网站支付
+
+weixin：公众号支付
+
+query：订单查询
 
 
 ---

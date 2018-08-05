@@ -4,7 +4,7 @@ spl_autoload_register('Loader::autoload'); // 注册自动加载
 use wycto\pay\PayFactory;
 
 $config = array('apjs_src'=>'alipay/weixin/ap.js','jump_url'=>"alipay/weixin/pay.html");
-$aliPay = PayFactory::getApp('alipay',$config,'weixin');
+$aliPay = PayFactory::getApp('alipay',$config)->gateway('wap')->meta();
 
 /*** 请填写以下配置信息 ***/
 $appid = '2016091300504235';  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
@@ -25,7 +25,7 @@ $aliPay->setPrivateKey($rsaPrivateKey);
 $aliPay->setTotalAmount($payAmount);
 $aliPay->setOutTradeNo($outTradeNo);
 $aliPay->setSubject($orderName);
-$aliPay->setGateWay('https://openapi.alipaydev.com/gateway.do');
+$aliPay->setApiUrl('https://openapi.alipaydev.com/gateway.do');
 $sHtml = $aliPay->pay(true);
 echo $sHtml;
  ?>

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Alipay 支付宝支付-手机网站支付
+ * @author : weiyi <294287600@qq.com>
+ * Licensed ( http://www.wycto.com )
+ * Copyright (c) 2018 http://www.wycto.com All rights reserved.
+ */
 namespace wycto\pay\alipay;
 class Wap
 {
