@@ -19,9 +19,8 @@ class Alipay extends PayAbstract
     private $_config = array();
     //支付终端
     private $_gateway = 'web';//默认电脑
-
-    private function __construct($config)
-    {
+    //构造方法
+    private function __construct($config){
         $this->_config = $config;
     }
 
@@ -33,21 +32,24 @@ class Alipay extends PayAbstract
         return self::$_app;
     }
 
+    /**
+     * 重置配置
+     */
     function setConfig($config){
         $this->_config = array_merge($this->_config,$config);
         return $this;
     }
 
+    /**
+     * 设置网关
+     */
     function gateway($gateway){
         $this->_gateway = $gateway;
         return $this;
     }
 
     /**
-     * 调用相关终端
-     *
-     * @param string $gateway
-     *            [web:电脑网站支付;wap:手机网站支付;app:APP支付;scan:扫码支付]
+     * 实例化相应的终端类
      */
     function meta()
     {
@@ -66,46 +68,6 @@ class Alipay extends PayAbstract
         }else{
             return null;
         }
-    }
-
-    function request()
-    {}
-
-    function notify()
-    {
-
-    }
-
-    function response()
-    {
-        /*
-         * array(12) {
-              ["total_amount"]=>
-              string(4) "0.01"
-              ["timestamp"]=>
-              string(19) "2018-08-03 14:10:55"
-              ["sign"]=>
-              string(344) "K5V8+Lk5alfos9rG55CiGJyjx96u+q+aimRKSRiuybeLfoPzhvsSZzO7qO9GBlnPYIS+rSB0Ozttmr0R5bKngfriDBC9qVfmwESA6r4qS6Ay9OVnK/Qgmj9A6FqZLL4SpzYUQohG5A8DNkdSgA3TuiXVr1L9TtsWyQk04HYhq1IpxuAgn0jxV0WYlxpIg4TU7nGyU3qpKnkw4Wb5kjnw8X7lLdOJ58/D8kpEIadyvCrgxTkYM0iZh5cD1l2dFOszz7r3PakzpiIDealze1j7EDwkBNap2Q33wQ1B7j+V6h8OxVjghXA=="
-              ["trade_no"]=>
-              string(28) "2018080321001004670505864343"
-              ["sign_type"]=>
-              string(4) "RSA2"
-              ["auth_app_id"]=>
-              string(16) "2017062060400732"
-              ["charset"]=>
-              string(4) "utf8"
-              ["seller_id"]=>
-              string(16) "2087721870519422"
-              ["method"]=>
-              string(27) "alipay.trade.wap.pay.return"
-              ["app_id"]=>
-              string(16) "2018062060400732"
-              ["out_trade_no"]=>
-              string(13) "5b63f1d1d17f9"
-              ["version"]=>
-              string(3) "1.0"
-            }
-         * */
     }
 }
 

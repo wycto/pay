@@ -8,10 +8,10 @@
 namespace wycto\pay;
 abstract class PayAbstract
 {
-    abstract function request();
+    abstract function setConfig();
 
-    abstract function notify();
+    abstract function gateway();
 
-    abstract function response();
+    abstract function meta();
 }
 ?>

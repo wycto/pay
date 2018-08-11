@@ -6,18 +6,22 @@
  * Copyright (c) 2016~2099 http://www.wycto.com All rights reserved.
  */
 namespace wycto\pay;
-use wycto\pay\wxpay\WxPayUnifiedOrder;
-use wycto\pay\wxpay\WxPayApi;
-use wycto\pay\wxpay\JsApiPay;
+
+use wycto\pay\alipay\Wap;
+use wycto\pay\alipay\Web;
+use wycto\pay\alipay\WeiXin;
+use wycto\pay\alipay\WeiXinQuery;
 class WxPay extends PayAbstract
 {
     // 全局唯一实例
     private static $_app = null;
-
+    // 配置
     private $_config = array();
-
+    //支付终端
+    private $_gateway = 'web';//默认电脑
+    //构造方法
     private function __construct($config) {
-
+        $this->_config = $config;
     }
 
     static function init($config){
@@ -25,40 +29,44 @@ class WxPay extends PayAbstract
         if(null == self::$_app){
          self::$_app = new WxPay($config);
         }
-
-         return self::$_app;
+        return self::$_app;
     }
 
-    function weiXinPay($paran){
-        //①、获取用户openid
-        $tools = new JsApiPay();
-        $openId = $tools->GetOpenid();
+    /**
+     * 重置配置
+     */
+    function setConfig($config){
+        $this->_config = array_merge($this->_config,$config);
+        return $this;
+    }
 
-        //②、统一下单
-        $input = new WxPayUnifiedOrder();
-        $input->SetBody($paran['body']);
-        $input->SetAttach("attach");
-        $input->SetOut_trade_no($paran['out_trade_no']);
-        $input->SetTotal_fee($paran['total_fee']*100);
-        $input->SetTime_start(date("YmdHis"));
-        $input->SetTime_expire(date("YmdHis", time() + 600));
-        $input->SetGoods_tag("test");
+    /**
+     * 设置网关
+     */
+    function gateway($gateway){
+        $this->_gateway = $gateway;
+        return $this;
+    }
 
-        $notify_url = $this->_notify_url;
-        if(isset($paran['notify_url'])&&!empty($paran['notify_url'])){
-            $notify_url = trim($paran['notify_url']);
+    /**
+     * 实例化相应的终端类
+     */
+    function meta()
+    {
+        if ($this->_gateway == 'wap') {
+            return new Wap($this->_config);// 手机端
         }
-        $input->SetNotify_url($notify_url);
-
-        $input->SetTrade_type("JSAPI");
-        $input->SetOpenid($openId);
-        $order = WxPayApi::unifiedOrder($input);
-
-        $jsApiParameters = $tools->GetJsApiParameters($order);
-
-        //获取共享收货地址js函数参数
-        $editAddress = $tools->GetEditAddressParameters();
-        return array('param'=>$jsApiParameters,'address'=>$editAddress);
+        elseif ($this->_gateway == 'weixin') {
+            return new WeiXin($this->_config);// 微信
+        }
+        elseif($this->_gateway == 'web') {
+            return new Web($this->_config);// 电脑
+        }
+        elseif($this->_gateway == 'query'){
+            return new WeiXinQuery($this->_config);//查询
+        }else{
+            return null;
+        }
     }
 }
 
