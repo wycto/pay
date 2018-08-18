@@ -71,6 +71,64 @@ class WeiXin
   }
 
   /**
+   * 统一下单
+   * 1.调用【网页授权获取用户信息】接口获取到用户在该公众号下的Openid
+   * 2.收款总费用 单位元
+   * 3.唯一的订单号
+   * 4.订单名称
+   * 5.支付结果通知url 不要有问号
+   * 6.支付时间
+   * @return string
+   */
+  function pay()
+  {
+      $timestamp = time();
+      $openid = $this->GetOpenid();//获取openid
+      $config = array(
+          'mch_id' => $this->mch_id,
+          'appid' => $this->appid,
+          'key' => $this->key,
+      );
+
+      $ip = $this->getIp();//获取ip
+
+      $unified = array(
+          'appid' => $config['appid'],
+          'attach' => 'pay',//商家数据包，原样返回，如果填写中文，请注意转换为utf-8
+          'body' => $this->subject,
+          'mch_id' => $config['mch_id'],
+          'nonce_str' => self::createNonceStr(),
+          'notify_url' => $this->notify_url,
+          'openid' => $openid,//rade_type=JSAPI，此参数必传
+          'out_trade_no' => $this->out_trade_no,
+          'spbill_create_ip' => $ip,
+          'total_fee' => floatval($this->total_amount * 100),       //单位 转为分
+          'trade_type' => 'JSAPI',
+      );
+      $unified['sign'] = self::getSign($unified, $config['key']);
+      $responseXml = self::curlPost('https://api.mch.weixin.qq.com/pay/unifiedorder', self::arrayToXml($unified));
+      $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
+      if ($unifiedOrder === false) {
+          die('parse xml error');
+      }
+      if ($unifiedOrder->return_code != 'SUCCESS') {
+          die($unifiedOrder->return_msg);
+      }
+      if ($unifiedOrder->result_code != 'SUCCESS') {
+          die($unifiedOrder->err_code);
+      }
+      $arr = array(
+          "appId" => $config['appid'],
+          "timeStamp" => "$timestamp",        //这里是字符串的时间戳，不是int，所以需加引号
+          "nonceStr" => self::createNonceStr(),
+          "package" => "prepay_id=" . $unifiedOrder->prepay_id,
+          "signType" => 'MD5',
+      );
+      $arr['paySign'] = self::getSign($arr, $config['key']);
+      return $arr;
+  }
+
+  /**
    * 通过跳转获取用户的openid，跳转流程如下：
    * 1、设置自己需要调回的url及其其他参数，跳转到微信服务器https://open.weixin.qq.com/connect/oauth2/authorize
    * 2、微信服务处理完成之后会跳转回用户redirect_uri地址，此时会带上一些参数，如：code
@@ -157,62 +215,6 @@ class WeiXin
       return $buff;
   }
 
-  /**
-   * 统一下单
-   * 1.调用【网页授权获取用户信息】接口获取到用户在该公众号下的Openid
-   * 2.收款总费用 单位元
-   * 3.唯一的订单号
-   * 4.订单名称
-   * 5.支付结果通知url 不要有问号
-   * 6.支付时间
-   * @return string
-   */
-  function createJsBizPackage()
-  {
-      $timestamp = time();
-      $openid = $this->GetOpenid();
-      $config = array(
-          'mch_id' => $this->mch_id,
-          'appid' => $this->appid,
-          'key' => $this->key,
-      );
-
-      $unified = array(
-          'appid' => $config['appid'],
-          'attach' => 'pay',//商家数据包，原样返回，如果填写中文，请注意转换为utf-8
-          'body' => $this->subject,
-          'mch_id' => $config['mch_id'],
-          'nonce_str' => self::createNonceStr(),
-          'notify_url' => $this->notify_url,
-          'openid' => $openid,//rade_type=JSAPI，此参数必传
-          'out_trade_no' => $this->out_trade_no,
-          'spbill_create_ip' => '127.0.0.1',
-          'total_fee' => floatval($this->total_amount * 100),       //单位 转为分
-          'trade_type' => 'JSAPI',
-      );
-      $unified['sign'] = self::getSign($unified, $config['key']);
-      $responseXml = self::curlPost('https://api.mch.weixin.qq.com/pay/unifiedorder', self::arrayToXml($unified));
-      $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
-      if ($unifiedOrder === false) {
-          die('parse xml error');
-      }
-      if ($unifiedOrder->return_code != 'SUCCESS') {
-          die($unifiedOrder->return_msg);
-      }
-      if ($unifiedOrder->result_code != 'SUCCESS') {
-          die($unifiedOrder->err_code);
-      }
-      $arr = array(
-          "appId" => $config['appid'],
-          "timeStamp" => "$timestamp",        //这里是字符串的时间戳，不是int，所以需加引号
-          "nonceStr" => self::createNonceStr(),
-          "package" => "prepay_id=" . $unifiedOrder->prepay_id,
-          "signType" => 'MD5',
-      );
-      $arr['paySign'] = self::getSign($arr, $config['key']);
-      return $arr;
-  }
-
   public static function curlGet($url = '', $options = array())
   {
       $ch = curl_init($url);
@@ -297,5 +299,20 @@ class WeiXin
           $reqPar = substr($buff, 0, strlen($buff) - 1);
       }
       return $reqPar;
+  }
+
+  protected function getIp() {
+    //strcasecmp 比较两个字符，不区分大小写。返回0，>0，<0。
+    if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
+        $ip = getenv('HTTP_CLIENT_IP');
+    } elseif(getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
+        $ip = getenv('HTTP_X_FORWARDED_FOR');
+    } elseif(getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
+        $ip = getenv('REMOTE_ADDR');
+    } elseif(isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    $res =  preg_match ( '/[\d\.]{7,15}/', $ip, $matches ) ? $matches [0] : '127.0.0.1';
+    return $res;
   }
 }
