@@ -8,9 +8,9 @@
 namespace wycto\pay;
 abstract class PayAbstract
 {
-    abstract function setConfig();
+    abstract function setConfig($config);
 
-    abstract function gateway();
+    abstract function gateway($gateway);
 
     abstract function meta();
 }
