@@ -7,10 +7,10 @@
  */
 namespace wycto\pay;
 
-use wycto\pay\alipay\Wap;
-use wycto\pay\alipay\Web;
-use wycto\pay\alipay\WeiXin;
-use wycto\pay\alipay\WeiXinQuery;
+use wycto\pay\wxpay\Wap;
+use wycto\pay\wxpay\Web;
+use wycto\pay\wxpay\WeiXin;
+use wycto\pay\wxpay\WeiXinQuery;
 class WxPay extends PayAbstract
 {
     // 全局唯一实例
