@@ -10,9 +10,9 @@ class WeiXin
 {
   /*配置信息*/
   protected $appid='';//微信支付申请对应的公众号的APPID
-  protected $mch_id;//产品中心-开发配置-商户号
-  protected $secret;//微信支付申请对应的公众号的APP Key
-  protected $key;//帐户设置-安全设置-API安全-API密钥-设置API密钥
+  protected $mch_id='';//产品中心-开发配置-商户号
+  protected $secret='';//微信支付申请对应的公众号的APP Key
+  protected $key='';//帐户设置-安全设置-API安全-API密钥-设置API密钥
   protected $notify_url='';//支付异步通知
 
   /*订单信息*/
