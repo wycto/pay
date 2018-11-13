@@ -1,58 +1,42 @@
 <?php
-/**
- * Alipay 微信支付-订单查询
- * @author : weiyi <294287600@qq.com>
- * Licensed ( http://www.wycto.com )
- * Copyright (c) 2018 http://www.wycto.com All rights reserved.
- */
-namespace wycto\pay\wxpay;
-class WeiXinQuery
+header('Content-type:text/html; Charset=utf-8');
+/** 请填写以下配置信息 */
+$mchid = 'xxxxx';          //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
+$appid = 'xxxxx';  //公众号APPID 通过微信支付商户资料审核后邮件发送
+$apiKey = 'xxxxx';   //https://pay.weixin.qq.com 帐户设置-安全设置-API安全-API密钥-设置API密钥
+$outTradeNo = '';     //要查询的订单号
+/** 配置结束 */
+$wxPay = new WxpayService($mchid,$appid,$apiKey);
+$result = $wxPay->orderquery($outTradeNo);
+echo json_encode($result);die;
+class WxpayService
 {
-    /*配置信息*/
-    protected $appid='';//微信支付申请对应的公众号的APPID
-    protected $mch_id='';//产品中心-开发配置-商户号
-    protected $key='';//帐户设置-安全设置-API安全-API密钥-设置API密钥
-    protected $out_trade_no='';//订单号
-
-    /*默认信息*/
-    protected $api_url = 'https://api.mch.weixin.qq.com/pay/orderquery';//
-
-    public function __construct($config=array())
+    protected $mchid;
+    protected $appid;
+    protected $apiKey;
+    protected $returnUrl;
+    public function __construct($mchid, $appid, $key)
     {
-        if(count($config)){
-            foreach ($config as $key=>$value){
-                if(isset($this->$key)){
-                    $this->$key = $value;
-                }
-            }
-        }
+        $this->mchid = $mchid;
+        $this->appid = $appid;
+        $this->apiKey = $key;
     }
-
-    /**
-     * 设置订单号 商户网站唯一订单号
-     * @param unknown $out_trade_no
-     */
-    public function setOutTradeNo($out_trade_no)
+    public function setReturnUrl($returnUrl)
     {
-        $this->out_trade_no = $out_trade_no;
+        $this->returnUrl = $returnUrl;
     }
-
-    /**
-     * 查询请求
-     * @return array
-     */
-    public function query($now=true)
+    public function orderquery($outTradeNo)
     {
         $config = array(
-            'mch_id' => $this->mch_id,
+            'mch_id' => $this->mchid,
             'appid' => $this->appid,
-            'key' => $this->key,
+            'key' => $this->apiKey,
         );
         //$orderName = iconv('GBK','UTF-8',$orderName);
         $unified = array(
             'appid' => $config['appid'],
             'mch_id' => $config['mch_id'],
-            'out_trade_no' => $this->out_trade_no,
+            'out_trade_no' => $outTradeNo,
             'nonce_str' => self::createNonceStr(),
         );
         $unified['sign'] = self::getSign($unified, $config['key']);
@@ -71,7 +55,6 @@ class WeiXinQuery
         $data['time'] = date('Y-m-d H:i:s');
         return $data;exit();
     }
-
     public function getTradeSTate($str)
     {
         switch ($str){
