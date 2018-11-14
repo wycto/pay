@@ -41,8 +41,13 @@ class WeiXinQuery
      * 查询请求
      * @return array
      */
-    public function query($now=true)
+    public function query($out_trade_no='')
     {
+
+        if(!$out_trade_no){
+            $out_trade_no = $this->out_trade_no;
+        }
+
         $config = array(
             'mch_id' => $this->mch_id,
             'appid' => $this->appid,
@@ -52,7 +57,7 @@ class WeiXinQuery
         $unified = array(
             'appid' => $config['appid'],
             'mch_id' => $config['mch_id'],
-            'out_trade_no' => $this->out_trade_no,
+            'out_trade_no' => $out_trade_no,
             'nonce_str' => self::createNonceStr(),
         );
         $unified['sign'] = self::getSign($unified, $config['key']);
@@ -71,7 +76,11 @@ class WeiXinQuery
         $data['data'] = $trade_state;
         $data['message'] = $this->getTradeSTate($trade_state);
         $data['time'] = date('Y-m-d H:i:s');
-        return $data;exit();
+        $data['data'] = $queryResult;
+        $data['out_trade_no'] = $out_trade_no;
+        $data['transaction_id'] = $this->transaction_id;
+        return $data;
+        exit();
     }
 
     public function getTradeSTate($str)
