@@ -67,6 +67,8 @@ class WxPay extends PayAbstract
             return new WeiXinQuery($this->_config);//查询
         }elseif($this->_gateway == 'payment'){
             return new Payment($this->_config);//查询
+        }elseif($this->_gateway == 'notify'){
+            return new WeiXinNotify($this->_config);//异步通知
         }else{
             return null;
         }
