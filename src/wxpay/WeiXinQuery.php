@@ -78,7 +78,7 @@ class WeiXinQuery
         $data['time'] = date('Y-m-d H:i:s');
         $data['data'] = $queryResult;
         $data['out_trade_no'] = $out_trade_no;
-        $data['transaction_id'] = $this->transaction_id;
+        $data['transaction_id'] = $queryResult->transaction_id;
         return $data;
         exit();
     }
