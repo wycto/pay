@@ -59,15 +59,17 @@ class WeiXinQuery
         $responseXml = self::curlPost('https://api.mch.weixin.qq.com/pay/orderquery', self::arrayToXml($unified));
         $queryResult = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($queryResult === false) {
-            die('parse xml error');
+            //die('parse xml error');
+            return array('status' => 0, 'message'=>'解析xml失败');
         }
         if ($queryResult->return_code != 'SUCCESS') {
-            die($queryResult->return_msg);
+            //die($queryResult->return_msg);
+            return array('status' => 0, 'message'=>$queryResult->return_msg);
         }
         $trade_state = $queryResult->trade_state;
-        $data['code'] = $trade_state=='SUCCESS' ? 0 : 1;
+        $data['status'] = $trade_state=='SUCCESS' ? 1 : 0;
         $data['data'] = $trade_state;
-        $data['msg'] = $this->getTradeSTate($trade_state);
+        $data['message'] = $this->getTradeSTate($trade_state);
         $data['time'] = date('Y-m-d H:i:s');
         return $data;exit();
     }
