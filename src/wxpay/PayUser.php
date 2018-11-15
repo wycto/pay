@@ -13,13 +13,10 @@ class PayUser
   protected $mch_id='';//产品中心-开发配置-商户号
   protected $secret='';//微信支付申请对应的公众号的APP Key
   protected $key='';//帐户设置-安全设置-API安全-API密钥-设置API密钥
-  protected $notify_url='';//支付异步通知
 
   /*订单信息*/
   protected $out_trade_no='';//订单号
   protected $total_amount='';//订单总金额
-  protected $subject='';//订单标题
-  protected $body='';//订单描述
 
   public $data = array();
 
@@ -53,24 +50,6 @@ class PayUser
   }
 
   /**
-   * 设置 商品的标题/交易标题/订单标题/订单关键字等
-   * @param string $subject
-   */
-  public function setSubject($subject)
-  {
-      $this->subject = $subject;
-  }
-
-  /**
-   * 设置支付异步通知地址
-   * @param unknown $notify_url 异步通知地址
-   */
-  public function setNotifyUrl($notify_url)
-  {
-      $this->notify_url = $notify_url;
-  }
-
-  /**
    * 统一下单
    * 1.调用【网页授权获取用户信息】接口获取到用户在该公众号下的Openid
    * 2.收款总费用 单位元
@@ -101,7 +80,7 @@ class PayUser
         /*'re_user_name'=>$trueName, */                //收款用户真实姓名（不支持给非实名用户打款）
         'partner_trade_no' => $this->out_trade_no,
         'spbill_create_ip' => $ip,
-        'amount' => floatval($totalFee * 100),       //单位 转为分
+        'amount' => floatval($this->total_amount * 100),       //单位 转为分
         'desc'=>'付款',            //企业付款操作说明信息
     );
     $unified['sign'] = self::getSign($unified, $config['key']);
@@ -120,7 +99,7 @@ class PayUser
         $result = array('status'=>false,'message'=>$unifiedOrder->err_code);
     }
 
-    $result = array('status'=>true,'message'=>"付款成功",'data'=>$unifiedOrder);
+    $result = array('status'=>true,'message'=>"提现成功",'data'=>$unifiedOrder);
 
     return $result;
   }
