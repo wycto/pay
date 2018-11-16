@@ -17,6 +17,7 @@ class PayUser
   /*订单信息*/
   protected $out_trade_no='';//订单号
   protected $total_amount='';//订单总金额
+  protected $openid ='';//用户的openid
 
   public $data = array();
 
@@ -50,6 +51,15 @@ class PayUser
   }
 
   /**
+   * 置顶用户openid
+   * @param unknown $payAmount
+   */
+  public function setOpenid($openid)
+  {
+      $this->openid = $openid;
+  }
+
+  /**
    * 统一下单
    * 1.调用【网页授权获取用户信息】接口获取到用户在该公众号下的Openid
    * 2.收款总费用 单位元
@@ -59,9 +69,18 @@ class PayUser
    * 6.支付时间
    * @return string
    */
-  function pay()
+  function pay($total_amount=0)
   {
-    $openid = $this->GetOpenid();//获取openid
+    //传递支付金额
+    if($total_amount==0){
+        $total_amount=$this->total_amount;
+    }
+
+    //指定用户
+    $openid = $this->openid;
+    if($openid==''){
+        $openid = $this->GetOpenid();//获取openid
+    }
 
     $config = array(
         'mch_id' => $this->mch_id,
@@ -80,7 +99,7 @@ class PayUser
         /*'re_user_name'=>$trueName, */                //收款用户真实姓名（不支持给非实名用户打款）
         'partner_trade_no' => $this->out_trade_no,
         'spbill_create_ip' => $ip,
-        'amount' => floatval($this->total_amount * 100),       //单位 转为分
+        'amount' => floatval($total_amount * 100),       //单位 转为分
         'desc'=>'付款',            //企业付款操作说明信息
     );
     $unified['sign'] = self::getSign($unified, $config['key']);
