@@ -11,7 +11,7 @@ use wycto\pay\wxpay\Wap;
 use wycto\pay\wxpay\Web;
 use wycto\pay\wxpay\WeiXin;
 use wycto\pay\wxpay\WeiXinQuery;
-use wycto\pay\wxpay\Payment;
+use wycto\pay\wxpay\PayUser;
 class WxPay extends PayAbstract
 {
     // 全局唯一实例
@@ -66,7 +66,7 @@ class WxPay extends PayAbstract
         elseif($this->_gateway == 'query'){
             return new WeiXinQuery($this->_config);//查询
         }elseif($this->_gateway == 'payment'){
-            return new Payment($this->_config);//查询
+            return new PayUser($this->_config);//企业付款
         }elseif($this->_gateway == 'notify'){
             return new WeiXinNotify($this->_config);//异步通知
         }else{
