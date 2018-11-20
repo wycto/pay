@@ -116,7 +116,7 @@ class PayUser
         $result = array('status'=>false,'msg'=>$unifiedOrder->err_code,'message'=>$unifiedOrder->err_code_des);
     }else{
       $data = json_encode($unifiedOrder);
-      $data = json_decode($unifiedOrder,true);
+      $data = json_decode($data,true);
       $result = array('status'=>true,'message'=>"提现成功",'data'=>$data);
     }
 
