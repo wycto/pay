@@ -14,6 +14,10 @@ class PayUser
   protected $secret='';//微信支付申请对应的公众号的APP Key
   protected $key='';//帐户设置-安全设置-API安全-API密钥-设置API密钥
 
+  //证书
+  protected $apiclient_cert='';//apiclient_cert.pem
+  protected $apiclient_key='';//apiclient_key.pem
+
   /*订单信息*/
   protected $out_trade_no='';//订单号
   protected $total_amount='';//订单总金额
@@ -60,6 +64,24 @@ class PayUser
   }
 
   /**
+   * 设置证书路劲
+   * @param unknown $payAmount
+   */
+  public function setApiclientCert($apiclient_cert)
+  {
+      $this->apiclient_cert = $apiclient_cert;
+  }
+
+  /**
+   * 设置证书路径
+   * @param unknown $payAmount
+   */
+  public function setApiclientKey($apiclient_key)
+  {
+      $this->apiclient_key = $apiclient_key;
+  }
+
+  /**
    * 统一下单
    * 1.调用【网页授权获取用户信息】接口获取到用户在该公众号下的Openid
    * 2.收款总费用 单位元
@@ -103,7 +125,7 @@ class PayUser
         'desc'=>'付款',            //企业付款操作说明信息
     );
     $unified['sign'] = self::getSign($unified, $config['key']);
-    $responseXml = $this->curlPost('https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers', self::arrayToXml($unified));
+    $responseXml = $this->curlPost('https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers', self::arrayToXml($unified),array(),$this->apiclient_cert,$this->apiclient_key);
     $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
 
     $result = array();
@@ -111,9 +133,25 @@ class PayUser
     if ($unifiedOrder === false) {
         $result = array('status'=>false,'message'=>'parse xml error');
     }elseif ($unifiedOrder->return_code != 'SUCCESS') {
-        $result = array('status'=>false,'message'=>$unifiedOrder->return_msg);
+        $message = $unifiedOrder->return_msg;
+        $message = json_encode($message);
+        $message = json_decode($message,true);
+        $message = implode(',',$message);
+        $result = array('status'=>false,'message'=>$message);
     }elseif ($unifiedOrder->result_code != 'SUCCESS') {
-        $result = array('status'=>false,'msg'=>$unifiedOrder->err_code,'message'=>$unifiedOrder->err_code_des);
+        $message = $unifiedOrder->err_code_des;
+        $message = json_encode($message);
+        $message = json_decode($message,true);
+        $message = implode(',',$message);
+
+        $message2 = $unifiedOrder->err_code;
+        $message2 = json_encode($message2);
+        $message2 = json_decode($message2,true);
+        $message2 = implode(',',$message2);
+
+        $message = $message . $message2;
+
+        $result = array('status'=>false,'msg'=>$unifiedOrder->err_code,'message'=>$message);
     }else{
       $data = json_encode($unifiedOrder);
       $data = json_decode($data,true);
@@ -226,7 +264,7 @@ class PayUser
       return $data;
   }
 
-  public static function curlPost($url = '', $postData = '', $options = array())
+  public static function curlPost($url = '', $postData = '', $options = array(),$apiclient_cert='',$apiclient_key='')
   {
       if (is_array($postData)) {
           $postData = http_build_query($postData);
@@ -243,7 +281,20 @@ class PayUser
       //https请求 不验证证书和host
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+      //第一种方法，cert 与 key 分别属于两个.pem文件
+      //默认格式为PEM，可以注释
+      curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
+      curl_setopt($ch,CURLOPT_SSLCERT,$apiclient_cert);
+      //默认格式为PEM，可以注释
+      curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
+      curl_setopt($ch,CURLOPT_SSLKEY,$apiclient_key);
+      //第二种方式，两个文件合成一个.pem文件
+//        curl_setopt($ch,CURLOPT_SSLCERT,getcwd().'/all.pem');
       $data = curl_exec($ch);
+      if($data === false)
+      {
+          echo 'Curl error: ' . curl_error($ch);exit();
+      }        
       curl_close($ch);
       return $data;
   }
